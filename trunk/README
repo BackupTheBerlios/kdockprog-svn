@@ -1,0 +1,68 @@
+KDockProg
+
+(c) by Tobias Elbrandt <tobiaselbrandt@berlios.de>
+
+http://kdockprog.berlios.de
+
+0. Introduction 
+KDockProg is a small desktop tool. It was developed for KDE3 using Qt3 but also
+works Gnome desktop.
+Purpose of the tool is to add icons to the desktop control bar to invoke 
+programs. When clicking on the icon the corresponding program is executed. 
+Then the icon changes to a new icon invoking a different program etc.
+Main purpose for this tool is to install a toggling icon executing two 
+different programs that e.g. start/stop something.
+
+1. Compile
+The version published here uses a simple Makefile which you probably have to
+configure before compiling. You need Qt3 and KDE3 development packages.
+The variable QTDIR is set to /usr/lib/qt3 and KDEDIR is set to /opt/kde3.
+If those two are set to your paths just enter
+  make
+in your shell. This will compile,link, and strip the tool.
+If you need an unstripped version with debug information, type
+  make debug
+instead.
+
+2. Install
+Copy the tool kdockprog to your PATH (e.g. /opt/kde3/bin) and make sure it is
+executable.
+  sudo install -m 755 kdockprog /opt/kde3/bin/
+
+3. Invoke
+Usage is very simple:
+  kdockprog -i <icon> -e <command> [[-i <icon>] -e <command> [..]]
+So you invoke kdockprog giving the path to an icon and a corresponding command
+line to execute. Then you may add a second icon with a second command, and if
+you wish a third and so on.
+
+Example 1: Sleep and wake up processes
+  ICONDIR=/opt/kde3/share/icons/crystalsvg/22x22/actions
+  APPS="firefox-bin firefox kpdf"
+  kdockprog -i $ICONDIR/stop.png -e "killall -19 $APPS" -i $ICONDIR/reload.png -e "killall -18 $APPS" &
+This small example installs a stop-icon on the control bar. If you click on it,
+two things happen:
+  1. the SIGSTOP signal is sent to all processes firefox-bin, firefox, and kpdf 
+putting them to sleep.
+  2. the icon changes itself to the reload-icon.
+If you then click on the reload-icon the signal SIGCONT is sent to the 
+processes waking them up and the icon again changes to the stop-icon.
+
+Example 2: Buttons for Amarok
+  ICONDIR=/opt/kde3/share/icons/crystalsvg/22x22/actions
+  kdockprog -i $ICONDIR/player_pause.png -e "dcop amarok player pause" -i $ICONDIR/player_play.png -e "dcop amarok player play" &
+  kdockprog -i $ICONDIR/player_end.png -e "dcop amarok player next" &
+Here two icons are installed on the control bar. The first one is a pause-icon
+sending a pause message via dcop to Amarok and then changes to a play-icon, 
+which sends a play message to Amarok.
+The second icon is very simple. It just displays the forward-icon sending a 
+next message to Amarok.
+
+I installed both sets of lines in a small script into my ~/.kde3/Autostart 
+folder.
+
+
+4. Help and bugs
+If you need help or find a bug in the tool, please consult
+  http://kdockprog.berlios.de
+or write an email to Tobias Elbrandt <tobiaselbrandt@berlios.de>
